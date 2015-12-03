@@ -25,6 +25,7 @@ SOFTWARE.
 package de.tu_dortmund.ub.data.ldp.auth;
 
 import javax.servlet.http.HttpServletResponse;
+import java.util.HashMap;
 import java.util.Properties;
 
 /**
@@ -34,6 +35,9 @@ import java.util.Properties;
 public interface AuthorizationInterface {
 
     void init(Properties properties);
+
+    HashMap<String,String> health(Properties properties);
+
 
     boolean isTokenValid(HttpServletResponse httpServletResponse, String service, String patronid, String access_token) throws AuthorizationException;
 }

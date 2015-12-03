@@ -23,6 +23,7 @@
 package de.tu_dortmund.ub.data.ldp.storage;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.HashMap;
 import java.util.Properties;
 
 /**
@@ -35,6 +36,8 @@ import java.util.Properties;
 public interface LinkedDataStorage {
 
     void init(Properties config) throws LinkedDataStorageException;
+
+    HashMap<String,String> health(Properties properties);
 
 
     String getResource(String resource, String format) throws LinkedDataStorageException;

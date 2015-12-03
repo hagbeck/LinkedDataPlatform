@@ -115,6 +115,7 @@ public class LinkedDataPlatformResourceEndpoint extends HttpServlet {
 
         // analyse request header
         String format = "html";
+        String profile = this.config.getProperty("storage.graph.default");
         String language = "de";
         String authorization = "";
 
@@ -155,6 +156,12 @@ public class LinkedDataPlatformResourceEndpoint extends HttpServlet {
         }
 
         this.logger.info("format = " + format);
+
+        if (httpServletRequest.getParameter("profile") != null) {
+            profile = httpServletRequest.getParameter("profile");
+        }
+
+        this.logger.info("profile = " + profile);
 
         // language
         if (language != null && language.startsWith("de")) {
@@ -236,7 +243,7 @@ public class LinkedDataPlatformResourceEndpoint extends HttpServlet {
 
             try {
 
-                String graph = config.getProperty("storage.graph.default");
+                String graph = profile;
 
                 // TODO get graph from request
 

@@ -52,9 +52,9 @@ import java.util.stream.Collectors;
 public class LinkedDataPlatformServiceEndpoint extends HttpServlet {
 
     public static final  String     UTF_8                       = "UTF-8";
-    private static       Properties config                      = new Properties();
+    private Properties config                      = new Properties();
 
-    private static Logger logger = Logger.getLogger(LinkedDataPlatformServiceEndpoint.class.getName());
+    private Logger logger = Logger.getLogger(LinkedDataPlatformServiceEndpoint.class.getName());
 
     public LinkedDataPlatformServiceEndpoint(String conffile) {
 
@@ -113,6 +113,7 @@ public class LinkedDataPlatformServiceEndpoint extends HttpServlet {
         this.logger.debug("[" + this.config.getProperty("service.name") + "] " + "Where is it from? " + httpServletRequest.getHeader("X-Forwarded-For") + ", " + isTUintern + ", " + isUBintern);
 
         String format = "html";
+        String profile = this.config.getProperty("storage.graph.default");
         String language = "de";
         String authorization = "";
 
@@ -147,6 +148,12 @@ public class LinkedDataPlatformServiceEndpoint extends HttpServlet {
                 else if (httpServletRequest.getHeader(headerNameKey).contains("application/n-quads")) {
                     format = "nquads";
                 }
+                else if (httpServletRequest.getHeader(headerNameKey).contains("application/sparql-results+json")) {
+                    format = "json";
+                }
+                else if (httpServletRequest.getHeader(headerNameKey).contains("application/sparql-results+xml")) {
+                    format = "xml";
+                }
             }
             if (headerNameKey.equals("Authorization")) {
                 authorization = httpServletRequest.getHeader( headerNameKey );
@@ -158,6 +165,12 @@ public class LinkedDataPlatformServiceEndpoint extends HttpServlet {
         }
 
         this.logger.info("format = " + format);
+
+        if (httpServletRequest.getParameter("profile") != null) {
+            profile = httpServletRequest.getParameter("profile");
+        }
+
+        this.logger.info("profile = " + profile);
 
         // language
         if (language != null && language.startsWith("de")) {
@@ -239,7 +252,7 @@ public class LinkedDataPlatformServiceEndpoint extends HttpServlet {
 
             try {
 
-                String graph = this.config.getProperty("storage.graph.default");
+                String graph = profile;
 
                 // TODO get graph from request
 
@@ -292,7 +305,7 @@ public class LinkedDataPlatformServiceEndpoint extends HttpServlet {
                             }
                             else {
 
-                                String accessRights = linkedDataStorage.getAccessRights(graph, uri);
+                                String accessRights = linkedDataStorage.getAccessRights(uri);
 
                                 if (!accessRights.equals("internal") || (accessRights.equals("internal") && isUBintern) || isAuthorized) {
 
@@ -420,10 +433,10 @@ public class LinkedDataPlatformServiceEndpoint extends HttpServlet {
                                         httpServletResponse.setContentType("text/html;charset=UTF-8");
                                     } else if (format.contains("xml")) {
 
-                                        httpServletResponse.setContentType("application/xml;charset=UTF-8");
+                                        httpServletResponse.setContentType("application/sparql-results+xml;charset=UTF-8");
                                     } else if (format.contains("json")) {
 
-                                        httpServletResponse.setContentType("application/json;charset=UTF-8");
+                                        httpServletResponse.setContentType("application/sparql-results+json;charset=UTF-8");
                                     }
 
                                     httpServletResponse.setStatus(HttpServletResponse.SC_OK);
@@ -492,6 +505,10 @@ public class LinkedDataPlatformServiceEndpoint extends HttpServlet {
                     format = "json";
                 } else if (httpServletRequest.getHeader(headerNameKey).contains("application/n-quads")) {
                     format = "nquads";
+                } else if (httpServletRequest.getHeader(headerNameKey).contains("application/sparql-results+json")) {
+                    format = "json";
+                } else if (httpServletRequest.getHeader(headerNameKey).contains("application/sparql-results+xml")) {
+                    format = "xml";
                 }
             }
             if (headerNameKey.equals("Authorization")) {
@@ -640,10 +657,10 @@ public class LinkedDataPlatformServiceEndpoint extends HttpServlet {
                                                 httpServletResponse.setContentType("text/html;charset=UTF-8");
                                             } else if (format.contains("xml")) {
 
-                                                httpServletResponse.setContentType("application/xml;charset=UTF-8");
+                                                httpServletResponse.setContentType("application/sparql-results+xml;charset=UTF-8");
                                             } else if (format.contains("json")) {
 
-                                                httpServletResponse.setContentType("application/json;charset=UTF-8");
+                                                httpServletResponse.setContentType("application/sparql-results+json;charset=UTF-8");
                                             }
 
                                             httpServletResponse.setStatus(HttpServletResponse.SC_OK);

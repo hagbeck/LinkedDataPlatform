@@ -109,6 +109,12 @@ public class LinkedDataPlatform {
         holderHome.setInitParameter("resourceBase", config.getProperty(LDPStatics.LDP_ENDPOINT_HOME_CONTENT_IDENTIFIER));
         context.addServlet(holderHome, "/*");
 
+        // - _ping
+        context.addServlet(new ServletHolder(new PingEndpoint(conffile)), config.getProperty("ldp.endpoint.ping"));
+
+        // - _health
+        context.addServlet(new ServletHolder(new HealthEndpoint(conffile)), config.getProperty("ldp.endpoint.health"));
+
         // - resource
         context.addServlet(new ServletHolder(new LinkedDataPlatformResourceEndpoint(conffile)), config.getProperty(LDPStatics.LDP_ENDPOINT_RESOURCE_CONTEXTPATH_IDENTIFIER));
 
